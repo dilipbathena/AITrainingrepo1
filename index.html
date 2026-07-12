@@ -5,14 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Training Dashboard</title>
   
-  <!-- External CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <!-- Corrected CSS path -->
+  <link rel="stylesheet" href="CSS/style.css" />
 
   <!-- Animate.css for animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -34,11 +31,14 @@
     © 2026 Training Dashboard | Powered by Supabase
   </footer>
 
-  <script>
+  <!-- Supabase Script -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
     // Supabase credentials
     const SUPABASE_URL = "https://qhbvriwrenqpvbxyfema.supabase.co";
     const SUPABASE_KEY = "sb_publishable_xEfbkm_GZANoTGDdJyMYUw_ZtW8mNiD";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function loadTrainings() {
       const { data, error } = await supabase
@@ -46,17 +46,19 @@
         .select("*")
         .order("training_date", { ascending: true });
 
-      if (error) {
-        console.error("Error fetching trainings:", error);
-        return;
-      }
-
       const container = document.getElementById("cards-container");
       container.innerHTML = "";
 
+      if (error) {
+        console.error("Error fetching trainings:", error);
+        container.innerHTML = `<p style="color:red;">⚠️ Failed to load trainings. Check console for details.</p>`;
+        return;
+      }
+
       data.forEach((row, index) => {
+        const delayClass = `animate__delay-${Math.min(index + 1, 4)}s`;
         const card = document.createElement("div");
-        card.className = `card animate__animated animate__fadeInUp animate__delay-${index}s`;
+        card.className = `card animate__animated animate__fadeInUp ${delayClass}`;
 
         card.innerHTML = `
           <h2>${row.training_name}</h2>
@@ -68,7 +70,7 @@
       });
     }
 
-    loadTrainings();
+    window.addEventListener("DOMContentLoaded", loadTrainings);
   </script>
 </body>
 </html>

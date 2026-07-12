@@ -5,62 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Generative AI Cheat Sheet</title>
   
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- Tailwind Config -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#4F46E5', // Indigo-600
-          },
-          fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui']
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Animate.css CDN for animations -->
+  <!-- Animate.css for animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
-<body class="bg-gradient-to-r from-indigo-50 via-white to-indigo-100 font-sans text-gray-900 p-6">
+<body>
 
   <!-- Hero Section -->
-  <div class="max-w-4xl mx-auto text-center mb-10">
-    <h1 class="text-5xl font-extrabold text-primary animate__animated animate__fadeInDown">
-      👋 Welcome to GitHub Training
-    </h1>
-    <p class="mt-4 text-lg text-gray-700 animate__animated animate__fadeInUp animate__delay-1s">
+  <div class="hero animate__animated animate__fadeInDown">
+    <h1>👋 Welcome to GitHub Training</h1>
+    <p class="animate__animated animate__fadeInUp animate__delay-1s">
       Master Generative AI concepts with this professional cheat sheet.
     </p>
   </div>
 
   <!-- Cheat Sheet Card -->
-  <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 animate__animated animate__fadeInUp animate__delay-2s">
-    <h2 class="text-4xl font-bold mb-6 text-primary">Generative AI Cheat Sheet</h2>
+  <div class="card animate__animated animate__fadeInUp animate__delay-2s">
+    <h2>Generative AI Cheat Sheet</h2>
 
-    <!-- Sections -->
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-3 border-b border-gray-300 pb-1">What is Generative AI?</h3>
-      <p class="leading-relaxed">Generative AI refers to artificial intelligence systems that can create new content, such as images, text, music, or code, by learning patterns from existing data.</p>
+    <section>
+      <h3>What is Generative AI?</h3>
+      <p>Generative AI refers to artificial intelligence systems that can create new content, such as images, text, music, or code, by learning patterns from existing data.</p>
     </section>
 
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-3 border-b border-gray-300 pb-1">Key Types of Generative AI Models</h3>
-      <ul class="list-disc list-inside space-y-3">
-        <li><strong>Generative Adversarial Networks (GANs):</strong> Competing neural networks for realistic synthetic data. <em>(Image generation, video, art)</em></li>
-        <li><strong>Variational Autoencoders (VAEs):</strong> Compress and regenerate data. <em>(Image and text synthesis)</em></li>
+    <section>
+      <h3>Key Types of Generative AI Models</h3>
+      <ul>
+        <li><strong>GANs:</strong> Competing neural networks for realistic synthetic data. <em>(Image generation, video, art)</em></li>
+        <li><strong>VAEs:</strong> Compress and regenerate data. <em>(Image and text synthesis)</em></li>
         <li><strong>Transformers (e.g., GPT):</strong> Sequence prediction for text. <em>(Chatbots, translation)</em></li>
       </ul>
     </section>
 
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-3 border-b border-gray-300 pb-1">Popular Applications</h3>
-      <ul class="list-disc list-inside space-y-2">
+    <section>
+      <h3>Popular Applications</h3>
+      <ul>
         <li><strong>Text Generation:</strong> Chatbots, summarization, translation.</li>
         <li><strong>Image & Video:</strong> Art, deepfakes, editing.</li>
         <li><strong>Music & Audio:</strong> Compose, speech, sound effects.</li>
@@ -69,9 +50,9 @@
       </ul>
     </section>
 
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-3 border-b border-gray-300 pb-1">Common Terms</h3>
-      <ul class="list-disc list-inside space-y-1">
+    <section>
+      <h3>Common Terms</h3>
+      <ul>
         <li><strong>Training Data:</strong> Dataset the AI learns from.</li>
         <li><strong>Prompt:</strong> Input given to produce output.</li>
         <li><strong>Fine-tuning:</strong> Customizing a trained model.</li>
@@ -80,9 +61,9 @@
       </ul>
     </section>
 
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-3 border-b border-gray-300 pb-1">Tips for Using Generative AI</h3>
-      <ul class="list-disc list-inside space-y-2">
+    <section>
+      <h3>Tips for Using Generative AI</h3>
+      <ul>
         <li>Use clear, specific prompts.</li>
         <li>Review and edit outputs.</li>
         <li>Mind ethical implications.</li>
@@ -91,8 +72,8 @@
     </section>
 
     <section>
-      <h3 class="text-2xl font-semibold mb-3 border-b border-gray-300 pb-1">Tools & Platforms</h3>
-      <ul class="list-disc list-inside space-y-2">
+      <h3>Tools & Platforms</h3>
+      <ul>
         <li><strong>OpenAI GPT:</strong> Text generation.</li>
         <li><strong>DALL·E, Midjourney:</strong> Image creation.</li>
         <li><strong>RunwayML:</strong> Creative AI projects.</li>
@@ -102,7 +83,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="mt-10 text-center text-gray-600 animate__animated animate__fadeIn animate__delay-3s">
+  <footer class="footer animate__animated animate__fadeIn animate__delay-3s">
     © 2026 GitHub Training | Powered by Generative AI
   </footer>
 

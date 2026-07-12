@@ -3,89 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generative AI Cheat Sheet</title>
+  <title>Training Dashboard</title>
   
   <!-- External CSS -->
   <link rel="stylesheet" href="style.css" />
 
   <!-- Animate.css for animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
   <!-- Hero Section -->
   <div class="hero animate__animated animate__fadeInDown">
-    <h1>👋 Welcome to GitHub Training</h1>
+    <h1>📚 Training Dashboard</h1>
     <p class="animate__animated animate__fadeInUp animate__delay-1s">
-      Master Generative AI concepts with this professional cheat sheet.
+      Explore upcoming training sessions and resources.
     </p>
   </div>
 
-  <!-- Cheat Sheet Card -->
-  <div class="card animate__animated animate__fadeInUp animate__delay-2s">
-    <h2>Generative AI Cheat Sheet</h2>
-
-    <section>
-      <h3>What is Generative AI?</h3>
-      <p>Generative AI refers to artificial intelligence systems that can create new content, such as images, text, music, or code, by learning patterns from existing data.</p>
-    </section>
-
-    <section>
-      <h3>Key Types of Generative AI Models</h3>
-      <ul>
-        <li><strong>GANs:</strong> Competing neural networks for realistic synthetic data. <em>(Image generation, video, art)</em></li>
-        <li><strong>VAEs:</strong> Compress and regenerate data. <em>(Image and text synthesis)</em></li>
-        <li><strong>Transformers (e.g., GPT):</strong> Sequence prediction for text. <em>(Chatbots, translation)</em></li>
-      </ul>
-    </section>
-
-    <section>
-      <h3>Popular Applications</h3>
-      <ul>
-        <li><strong>Text Generation:</strong> Chatbots, summarization, translation.</li>
-        <li><strong>Image & Video:</strong> Art, deepfakes, editing.</li>
-        <li><strong>Music & Audio:</strong> Compose, speech, sound effects.</li>
-        <li><strong>Code Generation:</strong> Software snippets.</li>
-        <li><strong>Data Augmentation:</strong> Enhance training datasets.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h3>Common Terms</h3>
-      <ul>
-        <li><strong>Training Data:</strong> Dataset the AI learns from.</li>
-        <li><strong>Prompt:</strong> Input given to produce output.</li>
-        <li><strong>Fine-tuning:</strong> Customizing a trained model.</li>
-        <li><strong>Tokens:</strong> Units of text processed.</li>
-        <li><strong>Latent Space:</strong> Abstract representation for generation.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h3>Tips for Using Generative AI</h3>
-      <ul>
-        <li>Use clear, specific prompts.</li>
-        <li>Review and edit outputs.</li>
-        <li>Mind ethical implications.</li>
-        <li>Enhance creativity, don’t replace it.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h3>Tools & Platforms</h3>
-      <ul>
-        <li><strong>OpenAI GPT:</strong> Text generation.</li>
-        <li><strong>DALL·E, Midjourney:</strong> Image creation.</li>
-        <li><strong>RunwayML:</strong> Creative AI projects.</li>
-        <li><strong>Hugging Face:</strong> Model repository.</li>
-      </ul>
-    </section>
+  <!-- Cards Container -->
+  <div id="cards-container" class="cards-container">
+    <!-- Cards will be injected here -->
   </div>
 
   <!-- Footer -->
-  <footer class="footer animate__animated animate__fadeIn animate__delay-3s">
-    © 2026 GitHub Training | Powered by Generative AI
+  <footer class="footer animate__animated animate__fadeIn animate__delay-4s">
+    © 2026 Training Dashboard | Powered by Supabase
   </footer>
 
+  <script>
+    // Supabase credentials
+    const SUPABASE_URL = "https://qhbvriwrenqpvbxyfema.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_xEfbkm_GZANoTGDdJyMYUw_ZtW8mNiD";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadTrainings() {
+      const { data, error } = await supabase
+        .from("training")
+        .select("*")
+        .order("training_date", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching trainings:", error);
+        return;
+      }
+
+      const container = document.getElementById("cards-container");
+      container.innerHTML = "";
+
+      data.forEach((row, index) => {
+        const card = document.createElement("div");
+        card.className = `card animate__animated animate__fadeInUp animate__delay-${index}s`;
+
+        card.innerHTML = `
+          <h2>${row.training_name}</h2>
+          <p>${row.description}</p>
+          <p class="date">📅 ${row.training_date}</p>
+          <a href="${row.training_link}" target="_blank" class="btn">View Training</a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    loadTrainings();
+  </script>
 </body>
 </html>

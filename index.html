@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Training Dashboard</title>
   
-  <!-- Corrected CSS path -->
   <link rel="stylesheet" href="CSS/style.css" />
 
-  <!-- Animate.css for animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
 
-  <!-- Hero Section -->
   <div class="hero animate__animated animate__fadeInDown">
     <h1>📚 Training Dashboard</h1>
     <p class="animate__animated animate__fadeInUp animate__delay-1s">
@@ -21,50 +18,66 @@
     </p>
   </div>
 
-  <!-- Cards Container -->
   <div id="cards-container" class="cards-container">
-    <!-- Cards will be injected here -->
+    <p style="text-align: center; color: #666;">Loading training sessions...</p>
   </div>
 
-  <!-- Footer -->
   <footer class="footer animate__animated animate__fadeIn animate__delay-4s">
     © 2026 Training Dashboard | Powered by Supabase
   </footer>
 
-  <!-- Supabase Script -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
     // Supabase credentials
     const SUPABASE_URL = "https://qhbvriwrenqpvbxyfema.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_xEfbkm_GZANoTGDdJyMYUw_ZtW8mNiD";
+    // NOTE: If cards still fail to load, ensure this key starts with "eyJ..." from your Supabase Dashboard
+    const SUPABASE_KEY = "sb_publishable_xEfbkm_GZANoTGDdJyMYUw_ZtW8mNiD"; 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function loadTrainings() {
+      const container = document.getElementById("cards-container");
+
       const { data, error } = await supabase
         .from("training")
         .select("*")
         .order("training_date", { ascending: true });
 
-      const container = document.getElementById("cards-container");
+      // Clear loading state
       container.innerHTML = "";
 
+      // 1. Check for connection/API errors
       if (error) {
         console.error("Error fetching trainings:", error);
-        container.innerHTML = `<p style="color:red;">⚠️ Failed to load trainings. Check console for details.</p>`;
+        container.innerHTML = `<p style="color:red; text-align:center;">⚠️ Failed to load trainings. Check browser console for details.</p>`;
         return;
       }
 
+      // 2. Check if data returned is completely empty (Common RLS issue)
+      if (!data || data.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; color:#555; padding: 20px;">
+            <p>ℹ️ No training records found.</p>
+            <small style="color:#888;">
+              If you have data in your database, ensure <strong>Row Level Security (RLS)</strong> 
+              is disabled or has a policy allowing public read access.
+            </small>
+          </div>`;
+        return;
+      }
+
+      // 3. Render data if everything is successful
       data.forEach((row, index) => {
+        // Fallback step to ensure animation delays match Animate.css default utility classes
         const delayClass = `animate__delay-${Math.min(index + 1, 4)}s`;
         const card = document.createElement("div");
         card.className = `card animate__animated animate__fadeInUp ${delayClass}`;
 
         card.innerHTML = `
-          <h2>${row.training_name}</h2>
-          <p>${row.description}</p>
-          <p class="date">📅 ${row.training_date}</p>
-          <a href="${row.training_link}" target="_blank" class="btn">View Training</a>
+          <h2>${row.training_name || 'Untitled Training'}</h2>
+          <p>${row.description || 'No description provided.'}</p>
+          <p class="date">📅 ${row.training_date || 'Date TBD'}</p>
+          <a href="${row.training_link || '#'}" target="_blank" class="btn">View Training</a>
         `;
         container.appendChild(card);
       });

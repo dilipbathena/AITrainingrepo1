@@ -3,87 +3,250 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Training Dashboard</title>
+  <title>Enterprise Hub | Dashboard</title>
   
+  <!-- CSS path -->
   <link rel="stylesheet" href="CSS/style.css" />
 
+  <!-- Animate.css for smooth animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <style>
+    /* Professional dashboard layout adjustments if not fully covered in style.css */
+    :root {
+      --primary-color: #2563eb;
+      --success-color: #16a34a;
+      --warning-color: #ca8a04;
+      --danger-color: #dc2626;
+      --bg-card: #ffffff;
+      --text-main: #1f2937;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f3f4f6;
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .section-title {
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 10px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Grid Layouts */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* Sales Card Custom Layout */
+    .sales-card {
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border-left: 5px solid var(--primary-color);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .status-approved { background: #dcfce7; color: #15803d; }
+    .status-conditions { background: #fef9c3; color: #a16207; }
+    .status-revision { background: #fee2e2; color: #991b1b; }
+
+    .metrics-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 15px 0;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .metric-box small { color: #6b7280; font-size: 0.75rem; }
+    .metric-box p { margin: 2px 0; font-weight: bold; font-size: 1rem; }
+
+    .review-quote {
+      font-style: italic;
+      font-size: 0.85rem;
+      background: #eff6ff;
+      padding: 10px;
+      border-left: 3px solid #3b82f6;
+      margin: 10px 0 0 0;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="hero animate__animated animate__fadeInDown">
-    <h1>📚 Training Dashboard</h1>
-    <p class="animate__animated animate__fadeInUp animate__delay-1s">
-      Explore upcoming training sessions and resources.
-    </p>
+  <div class="dashboard-container">
+    <!-- Hero Section -->
+    <div class="hero animate__animated animate__fadeInDown" style="text-align: center; margin-bottom: 40px;">
+      <h1>🏢 Enterprise Operations Hub</h1>
+      <p class="animate__animated animate__fadeInUp animate__delay-1s">
+        Unified Management Workspace • Training Programs & Sales Reports
+      </p>
+    </div>
+
+    <!-- SECTION 1: TRAININGS -->
+    <h2 class="section-title animate__animated animate__fadeInLeft"><span class="icon">📚</span> Upcoming Trainings</h2>
+    <div id="trainings-container" class="grid-container">
+      <p style="color: #666;">Loading training sessions...</p>
+    </div>
+
+    <!-- SECTION 2: SALES REPORTS -->
+    <h2 class="section-title animate__animated animate__fadeInLeft" style="animation-delay: 0.2s;"><span class="icon">📊</span> Reviewed Sales Performance Reports</h2>
+    <div id="sales-container" class="grid-container">
+      <p style="color: #666;">Loading sales analytics...</p>
+    </div>
   </div>
 
-  <div id="cards-container" class="cards-container">
-    <p style="text-align: center; color: #666;">Loading training sessions...</p>
-  </div>
-
-  <footer class="footer animate__animated animate__fadeIn animate__delay-4s">
-    © 2026 Training Dashboard | Powered by Supabase
+  <!-- Footer -->
+  <footer class="footer animate__animated animate__fadeIn" style="text-align: center; margin-top: 60px; padding: 20px; color: #888;">
+    © 2026 Enterprise Dashboard | Live connection established via Supabase SDK
   </footer>
 
+  <!-- Supabase Script Initialization -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    // Supabase credentials
     const SUPABASE_URL = "https://qhbvriwrenqpvbxyfema.supabase.co";
-    // NOTE: If cards still fail to load, ensure this key starts with "eyJ..." from your Supabase Dashboard
     const SUPABASE_KEY = "sb_publishable_xEfbkm_GZANoTGDdJyMYUw_ZtW8mNiD"; 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function loadTrainings() {
-      const container = document.getElementById("cards-container");
+    // Dynamic badge builder based on approval status
+    function getStatusClass(status) {
+      if (!status) return 'status-conditions';
+      const s = status.toLowerCase();
+      if (s.includes('conditions')) return 'status-conditions';
+      if (s.includes('approved')) return 'status-approved';
+      if (s.includes('revision') || s.includes('need')) return 'status-revision';
+      return 'status-conditions';
+    }
 
+    // --- FETCH & RENDER TRAININGS ---
+    async function loadTrainings() {
+      const container = document.getElementById("trainings-container");
       const { data, error } = await supabase
         .from("training")
         .select("*")
         .order("training_date", { ascending: true });
 
-      // Clear loading state
       container.innerHTML = "";
 
-      // 1. Check for connection/API errors
       if (error) {
         console.error("Error fetching trainings:", error);
-        container.innerHTML = `<p style="color:red; text-align:center;">⚠️ Failed to load trainings. Check browser console for details.</p>`;
+        container.innerHTML = `<p style="color:red;">⚠️ Failed to load trainings. Check console.</p>`;
         return;
       }
 
-      // 2. Check if data returned is completely empty (Common RLS issue)
       if (!data || data.length === 0) {
-        container.innerHTML = `
-          <div style="text-align:center; color:#555; padding: 20px;">
-            <p>ℹ️ No training records found.</p>
-            <small style="color:#888;">
-              If you have data in your database, ensure <strong>Row Level Security (RLS)</strong> 
-              is disabled or has a policy allowing public read access.
-            </small>
-          </div>`;
+        container.innerHTML = `<p style="color:#777;">ℹ️ No training records available (Check RLS rules).</p>`;
         return;
       }
 
-      // 3. Render data if everything is successful
       data.forEach((row, index) => {
-        // Fallback step to ensure animation delays match Animate.css default utility classes
-        const delayClass = `animate__delay-${Math.min(index + 1, 4)}s`;
+        const delayClass = `animate__delay-${Math.min(index + 1, 3)}s`;
         const card = document.createElement("div");
         card.className = `card animate__animated animate__fadeInUp ${delayClass}`;
-
         card.innerHTML = `
-          <h2>${row.training_name || 'Untitled Training'}</h2>
-          <p>${row.description || 'No description provided.'}</p>
-          <p class="date">📅 ${row.training_date || 'Date TBD'}</p>
-          <a href="${row.training_link || '#'}" target="_blank" class="btn">View Training</a>
+          <h2>${row.training_name || 'Untitled Seminar'}</h2>
+          <p>${row.description || 'No overview available.'}</p>
+          <p class="date" style="font-weight:600; color:#4b5563;">📅 ${row.training_date || 'TBD'}</p>
+          <a href="${row.training_link || '#'}" target="_blank" class="btn" style="display:inline-block; margin-top:10px;">Launch Resource</a>
         `;
         container.appendChild(card);
       });
     }
 
-    window.addEventListener("DOMContentLoaded", loadTrainings);
+    // --- FETCH & RENDER SALES REPORTS ---
+    async function loadSalesReports() {
+      const container = document.getElementById("sales-container");
+      const { data, error } = await supabase
+        .from("sales_reports")
+        .select("*")
+        .order("report_date", { ascending: false });
+
+      container.innerHTML = "";
+
+      if (error) {
+        console.error("Error fetching sales reports:", error);
+        container.innerHTML = `<p style="color:red;">⚠️ Failed to load sales data. Verify table "sales_reports" exists.</p>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        container.innerHTML = `<p style="color:#777;">ℹ️ No sales data records returned.</p>`;
+        return;
+      }
+
+      data.forEach((row, index) => {
+        const delayClass = `animate__delay-${Math.min(index + 1, 4)}s`;
+        const card = document.createElement("div");
+        card.className = `sales-card animate__animated animate__fadeInUp ${delayClass}`;
+        
+        // Currency formatter utility
+        const fmt = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size:1.15rem;">📈 Report: ${row.reporting_period}</h3>
+            <span class="status-badge ${getStatusClass(row.review_status)}">${row.review_status}</span>
+          </div>
+          <small style="color:#9ca3af;">Reviewed on ${row.review_date} by ${row.reviewed_by}</small>
+          
+          <div class="metrics-summary">
+            <div class="metric-box">
+              <small>REVENUE GENERATED</small>
+              <p style="color:var(--success-color);">${fmt(row.total_revenue_actual)}</p>
+              <small>Target: ${fmt(row.total_revenue_target)}</small>
+            </div>
+            <div class="metric-box">
+              <small>NEW ACQUISITIONS</small>
+              <p>${row.new_customers_actual} Clients</p>
+              <small>Target: ${row.new_customers_target}</small>
+            </div>
+          </div>
+
+          <div style="font-size:0.85rem; margin-bottom:8px;">
+            <strong>Avg Deal Value:</strong> ${fmt(row.avg_deal_size)} | <strong>Sales Cycle:</strong> ${row.sales_cycle_days} Days
+          </div>
+          
+          <div class="review-quote">
+            <strong>Head of Sales Directive:</strong><br>
+            "${row.directives_action_plan || 'No directives attached.'}"
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Load both buckets asynchronously when page lifecycle initiates
+    window.addEventListener("DOMContentLoaded", () => {
+      loadTrainings();
+      loadSalesReports();
+    });
   </script>
 </body>
 </html>

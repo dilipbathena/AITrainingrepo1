@@ -95,34 +95,55 @@
 <body>
 
   <div class="dashboard-container">
+    <!-- Hero Section with Auth Bar -->
     <div class="hero animate__animated animate__fadeInDown" style="text-align: center; margin-bottom: 40px;">
       <h1>🏢 Enterprise Operations Hub</h1>
       <p class="animate__animated animate__fadeInUp animate__delay-1s">
         Unified Management Workspace • Training Programs & Sales Reports
       </p>
+
+      <!-- Google Auth Controls -->
+      <div id="auth-container" style="margin-top: 20px;">
+        <button id="login-btn" class="btn" style="background-color: #4285F4; color: white; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 4px;">
+          🔑 Sign in with Google
+        </button>
+        
+        <div id="user-profile" style="display: none; align-items: center; justify-content: center; gap: 10px;">
+          <img id="user-avatar" src="" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%;" />
+          <span id="user-name" style="font-weight: bold;"></span>
+          <button id="logout-btn" style="background-color: #dc2626; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; margin-left: 10px;">
+            Sign Out
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- SECTION 1: TRAININGS -->
     <h2 class="section-title animate__animated animate__fadeInLeft"><span class="icon">📚</span> Upcoming Trainings</h2>
     <div id="trainings-container" class="grid-container">
-      <p style="color: #666;">Loading training sessions...</p>
+      <p style="color: #666;">Please sign in to view training sessions.</p>
     </div>
 
     <!-- SECTION 2: SALES REPORTS -->
     <h2 class="section-title animate__animated animate__fadeInLeft" style="animation-delay: 0.2s;"><span class="icon">📊</span> Reviewed Sales Performance Reports</h2>
     <div id="sales-container" class="grid-container">
-      <p style="color: #666;">Loading sales analytics...</p>
+      <p style="color: #666;">Please sign in to view executive sales reports.</p>
     </div>
   </div>
 
   <footer class="footer animate__animated animate__fadeIn" style="text-align: center; margin-top: 60px; padding: 20px; color: #888;">
-    © 2026 Enterprise Dashboard | Live connection established via Supabase SDK
+    © 2026 Enterprise Dashboard | Secured via Firebase Auth & Supabase
   </footer>
 
   <script type="module">
+    // Supabase Import
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    // Importing keys safely from config.js
+    // Firebase Imports
+    import { auth, googleProvider, signInWithPopup, signOut } from "./firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Credentials imported securely from local config.js
     import { SUPABASE_URL, SUPABASE_KEY } from "./config.js";
 
     if (!SUPABASE_URL || !SUPABASE_KEY) {
@@ -131,6 +152,33 @@
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // DOM Elements
+    const loginBtn = document.getElementById("login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const userProfile = document.getElementById("user-profile");
+    const userAvatar = document.getElementById("user-avatar");
+    const userName = document.getElementById("user-name");
+
+    // Google Sign-In Event Listener
+    loginBtn.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, googleProvider);
+      } catch (error) {
+        console.error("Authentication Error:", error);
+        alert("Failed to sign in with Google: " + error.message);
+      }
+    });
+
+    // Sign-Out Event Listener
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error("Sign-out Error:", error);
+      }
+    });
+
+    // Helper: Dynamic badge styles
     function getStatusClass(status) {
       if (!status) return 'status-conditions';
       const s = status.toLowerCase();
@@ -140,8 +188,11 @@
       return 'status-conditions';
     }
 
+    // --- FETCH & RENDER TRAININGS ---
     async function loadTrainings() {
       const container = document.getElementById("trainings-container");
+      container.innerHTML = `<p style="color:#666;">Loading training sessions...</p>`;
+
       const { data, error } = await supabase
         .from("training")
         .select("*")
@@ -174,8 +225,11 @@
       });
     }
 
+    // --- FETCH & RENDER SALES REPORTS ---
     async function loadSalesReports() {
       const container = document.getElementById("sales-container");
+      container.innerHTML = `<p style="color:#666;">Loading sales analytics...</p>`;
+
       const { data, error } = await supabase
         .from("sales_reports")
         .select("*")
@@ -234,9 +288,26 @@
       });
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      loadTrainings();
-      loadSalesReports();
+    // Monitor Firebase Auth State
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        loginBtn.style.display = "none";
+        userProfile.style.display = "flex";
+        userAvatar.src = user.photoURL || "https://via.placeholder.com/40";
+        userName.textContent = user.displayName || user.email;
+
+        // Fetch data after authentication confirmed
+        loadTrainings();
+        loadSalesReports();
+      } else {
+        // User is signed out
+        loginBtn.style.display = "inline-block";
+        userProfile.style.display = "none";
+
+        document.getElementById("trainings-container").innerHTML = `<p style="color:#777;">Please sign in to view training sessions.</p>`;
+        document.getElementById("sales-container").innerHTML = `<p style="color:#777;">Please sign in to view executive sales reports.</p>`;
+      }
     });
   </script>
 </body>

@@ -1,6 +1,7 @@
 # Local Environment Variables (Keep API keys secret)
 .env
 config.js
+firebase-config.js
 .env.local
 .env.development.local
 .env.test.local

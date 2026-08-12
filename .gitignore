@@ -1,5 +1,6 @@
 # Local Environment Variables (Keep API keys secret)
 .env
+config.js
 .env.local
 .env.development.local
 .env.test.local

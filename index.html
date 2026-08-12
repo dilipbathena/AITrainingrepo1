@@ -122,12 +122,11 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    // Pulled dynamically from .env using Vite environment variables
-    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-    const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    // Importing keys safely from config.js
+    import { SUPABASE_URL, SUPABASE_KEY } from "./config.js";
 
     if (!SUPABASE_URL || !SUPABASE_KEY) {
-      console.error("Missing Supabase configuration! Make sure your .env file is set up correctly.");
+      console.error("Missing Supabase configuration! Ensure config.js is created in your root folder.");
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
